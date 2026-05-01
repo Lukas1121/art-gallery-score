@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>Metal Gallery Scorer</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- PIN -->
+  <div id="screen-pin" class="screen">
+    <div class="screen-center">
+      <div class="pin-title">Metal Gallery</div>
+      <div class="pin-subtitle">Birthday Edition</div>
+      <div class="pin-form">
+        <input type="password" id="pin-input" inputmode="numeric" maxlength="4" placeholder="PIN" autocomplete="off">
+        <p id="pin-error" class="hidden" style="color:#e63946;font-size:.9rem;">Wrong PIN</p>
+        <button class="btn-primary" style="width:100%;" onclick="checkPin()">Enter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home -->
+  <div id="screen-home" class="screen hidden">
+    <div class="home-header">
+      <div class="home-header-top">
+        <h1>Metal Gallery</h1>
+        <span id="card-count" class="card-count">0 cards</span>
+      </div>
+    </div>
+    <div id="warning-banner" class="warning-banner hidden">Some cards need review before showing results</div>
+    <div id="card-list" class="card-list"></div>
+    <div class="bottom-bar">
+      <button class="btn-secondary" onclick="showResults()">Show Results</button>
+      <button class="btn-primary" onclick="triggerCapture()">Scan Card</button>
+    </div>
+    <input type="file" accept="image/*" capture="environment" id="file-input" hidden>
+  </div>
+
+  <!-- Preview -->
+  <div id="screen-preview" class="screen hidden">
+    <div class="screen-header">
+      <h2>Check Photo</h2>
+    </div>
+    <div class="preview-wrap">
+      <img id="preview-img" alt="Captured scorecard">
+    </div>
+    <div class="bottom-bar">
+      <button class="btn-secondary" onclick="retakePhoto()">Redo</button>
+      <button class="btn-primary" onclick="acceptPhoto()">Accept</button>
+    </div>
+  </div>
+
+  <!-- Processing -->
+  <div id="screen-processing" class="screen hidden">
+    <div class="screen-center">
+      <div class="spinner"></div>
+      <p class="processing-text">Reading scorecard...</p>
+    </div>
+  </div>
+
+  <!-- Review (manual input for flagged cells) -->
+  <div id="screen-review" class="screen hidden">
+    <div class="screen-header">
+      <h2>Fix Missing Scores</h2>
+    </div>
+    <div class="review-body">
+      <div class="field-group">
+        <label>Voter name</label>
+        <input type="text" id="review-voter" placeholder="Voter name">
+      </div>
+      <p class="review-info">Claude couldn't read the cells below. Enter the correct scores (0–10):</p>
+      <div id="warning-inputs"></div>
+    </div>
+    <div class="bottom-bar">
+      <button class="btn-primary" onclick="saveReview()">Save Card</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="screen-results" class="screen hidden">
+    <div class="screen-header">
+      <h2>Results</h2>
+      <button class="btn-ghost" onclick="showScreen('home')">&larr; Back</button>
+    </div>
+    <div id="results-content" class="results-body"></div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
