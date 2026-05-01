@@ -242,6 +242,22 @@ button:active { opacity: 0.75; }
 
 .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
+/* ---- Camera Screen ---- */
+.camera-wrap {
+  flex: 1;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ---- Preview Screen ---- */
 .preview-wrap {
   flex: 1;

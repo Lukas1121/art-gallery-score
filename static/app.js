@@ -10,6 +10,7 @@ const CAT_LABELS = {
 let cards = [];
 let capturedImage = null;
 let currentCard = null;
+let cameraStream = null;
 
 // ---- Init ----
 
@@ -28,6 +29,7 @@ window.addEventListener('load', () => {
   });
 
   document.getElementById('file-input').addEventListener('change', handleFileSelect);
+
 });
 
 // ---- PIN ----
@@ -111,15 +113,55 @@ function openReview(id) {
 
 // ---- Capture ----
 
-function triggerCapture() {
-  document.getElementById('file-input').click();
+async function triggerCapture() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width:  { ideal: 1280, max: 1280 },
+        height: { ideal: 960,  max: 960  }
+      },
+      audio: false
+    });
+    cameraStream = stream;
+    const video = document.getElementById('camera-video');
+    video.srcObject = stream;
+    showScreen('camera');
+  } catch (err) {
+    // Fallback for browsers that block getUserMedia (e.g. non-HTTPS desktop)
+    document.getElementById('file-input').click();
+  }
 }
 
+function closeCamera() {
+  stopCamera();
+  showScreen('home');
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+}
+
+function captureFrame() {
+  const video = document.getElementById('camera-video');
+  const canvas = document.createElement('canvas');
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  capturedImage = canvas.toDataURL('image/jpeg', 0.85);
+  stopCamera();
+  document.getElementById('preview-img').src = capturedImage;
+  showScreen('preview');
+}
+
+// Fallback for file input (non-getUserMedia path)
 async function handleFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
   e.target.value = '';
-
   capturedImage = await compressImage(file);
   document.getElementById('preview-img').src = capturedImage;
   showScreen('preview');
@@ -131,7 +173,7 @@ function compressImage(file) {
     reader.onload = ev => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 1600;
+        const MAX = 1280;
         let w = img.width, h = img.height;
         if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
         if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
