@@ -37,8 +37,9 @@
     <div id="warning-banner" class="warning-banner hidden">Some cards need review before showing results</div>
     <div id="card-list" class="card-list"></div>
     <div class="bottom-bar">
-      <button class="btn-secondary" onclick="showResults()">Show Results</button>
-      <button class="btn-primary" onclick="triggerCapture()">Scan Card</button>
+      <button class="btn-secondary" onclick="showResults()">Results</button>
+      <button class="btn-secondary" onclick="document.getElementById('file-input').click()">Gallery</button>
+      <button class="btn-primary" onclick="triggerCapture()">Camera</button>
     </div>
     <input type="file" accept="image/*" id="file-input" hidden>
   </div>
