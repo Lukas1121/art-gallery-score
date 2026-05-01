@@ -180,9 +180,9 @@ def get_results():
         cat: max(artwork_averages.items(), key=lambda x: x[1].get(cat, 0))
         for cat in ['how_metal', 'creativity', 'execution', 'would_buy']
     }
-    voter_avgs = {v: avg(scores) for v, scores in voter_all_scores.items()}
-    most_g = max(voter_avgs.items(), key=lambda x: x[1])
-    least_g = min(voter_avgs.items(), key=lambda x: x[1])
+    voter_totals = {v: sum(scores) for v, scores in voter_all_scores.items()}
+    most_g = max(voter_totals.items(), key=lambda x: x[1])
+    least_g = min(voter_totals.items(), key=lambda x: x[1])
 
     return jsonify({
         'overall_winner': {'artwork': overall_winner[0], 'score': overall_winner[1]['total']},
@@ -190,10 +190,10 @@ def get_results():
             cat: {'artwork': w[0], 'score': w[1][cat]}
             for cat, w in category_winners.items()
         },
-        'most_generous': {'voter': most_g[0], 'avg': most_g[1]},
-        'least_generous': {'voter': least_g[0], 'avg': least_g[1]},
+        'most_generous': {'voter': most_g[0], 'total': most_g[1]},
+        'least_generous': {'voter': least_g[0], 'total': least_g[1]},
         'artwork_breakdown': artwork_averages,
-        'voter_breakdown': voter_avgs
+        'voter_breakdown': voter_totals
     })
 
 

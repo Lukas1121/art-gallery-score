@@ -157,14 +157,33 @@ function captureFrame() {
   showScreen('preview');
 }
 
-// Fallback for file input (non-getUserMedia path)
+// Gallery — bulk import, no preview
 async function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
   e.target.value = '';
-  capturedImage = await compressImage(file);
-  document.getElementById('preview-img').src = capturedImage;
-  showScreen('preview');
+
+  showScreen('processing');
+
+  for (let i = 0; i < files.length; i++) {
+    document.querySelector('.processing-text').textContent =
+      files.length > 1 ? `Processing ${i + 1} of ${files.length}...` : 'Reading scorecard...';
+
+    try {
+      const image = await compressImage(files[i]);
+      await fetch('/api/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image })
+      });
+    } catch (err) {
+      // Skip failed cards silently — they'll be missing from the list
+    }
+  }
+
+  document.querySelector('.processing-text').textContent = 'Reading scorecard...';
+  await loadCards();
+  showScreen('home');
 }
 
 function compressImage(file) {
@@ -372,12 +391,12 @@ function renderResults(data) {
         <div class="result-card">
           <div class="result-label">Most Generous</div>
           <div class="result-value" style="font-size:1.3rem;">${esc(data.most_generous.voter)}</div>
-          <div class="result-sub">Avg score: ${data.most_generous.avg}</div>
+          <div class="result-sub">Total points given: ${data.most_generous.total}</div>
         </div>
         <div class="result-card">
           <div class="result-label">Least Generous</div>
           <div class="result-value" style="font-size:1.3rem;">${esc(data.least_generous.voter)}</div>
-          <div class="result-sub">Avg score: ${data.least_generous.avg}</div>
+          <div class="result-sub">Total points given: ${data.least_generous.total}</div>
         </div>
       </div>
     </div>
